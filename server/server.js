@@ -4,6 +4,10 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import path from "path";
+import {EmployeeApi} from "./api/employeeApi.js";
+import {ManagerApi} from "./api/managerApi.js";
+import {ActivityApi} from "./api/activityApi.js";
+import {ActivityLoggerApi} from "./api/activityLoggerApi.js";
 
 dotenv.config();
 
@@ -13,6 +17,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static("../client/dist"));
+
+const mongodburl = process.env.MONGODB_URL;
+
+if(mongodburl){
+    const client = new MongoClient(mongodburl);
+
+    const mongoDbName = process.env.MONGODB_DATABASE || "SpringPgExam";
+
+    client.connect().then(async (conn) => {
+        app.use("/api/employees", EmployeeApi(conn.db(mongoDbName)));
+        app.use("/api/managers", ManagerApi(conn.db(mongoDbName)));
+        app.use("/api/activities", ActivityApi(conn.db(mongoDbName)));
+        app.use("/api/activitylogs", ActivityLoggerApi(conn.db(mongoDbName)));
+    })
+}
+
 
 
 
