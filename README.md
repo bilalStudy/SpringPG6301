@@ -77,3 +77,4 @@ and management for activitylogs for the employee
 if failed to load resources i would suggest ctrl + u
 the webapp wouldnt recognize the resources before i did this on another computer.
 it is working fine locally however as you can see in the screenshots
+https://stackoverflow.com/questions/74168294/failed-to-load-resource-the-server-responded-with-404
