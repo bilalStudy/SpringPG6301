@@ -87,12 +87,13 @@ export function EmployeeApi(db){
             return;
         }
 
-        const { id, username, fullname, password, department } = req.body;
+        const { id, username, fullname, department } = req.body;
+
 
         await db.collection("employee")
             .updateOne(
                 { _id: new ObjectId(id) },
-                { $set: { username, fullname, password, department } }
+                { $set: { username, fullname, department } }
             );
 
         res.sendStatus(200);
@@ -115,6 +116,28 @@ export function EmployeeApi(db){
             .deleteOne({ _id: new ObjectId(id) });
 
         res.sendStatus(200);
+    })
+
+    api.get("/", async (req, res) => {
+        const managerId = req.cookies.manager;
+
+        if (!managerId) {
+            res.sendStatus(403);
+            return;
+        }
+
+        const employeeItems = await db.collection("employee")
+            .find()
+            .map(({ _id,username, fullname, password, department }) => ({
+                id: _id,
+                username,
+                fullname,
+                password,
+                department,
+            }))
+            .toArray();
+
+        res.json(employeeItems)
     })
     return api;
 }

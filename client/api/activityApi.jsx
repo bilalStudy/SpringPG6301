@@ -38,4 +38,9 @@ export const activityApi = {
 
         return res.ok;
     },
+    departmentList : async () => {
+        const res = await fetch("/api/activities/department")
+
+        return await res.json();
+    }
 }

@@ -4,13 +4,13 @@ export const activityLoggerApi = {
 
         return await res.json();
     },
-    update: async (activity) => {
+    update: async ({ id, employeeName, activityName, date, hours }) => {
         const res = await fetch("/api/activitylogs", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(activity),
+            body: JSON.stringify({id, employeeName, activityName, date, hours }),
         });
 
         return res.ok;

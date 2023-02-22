@@ -51,4 +51,10 @@ export const employeeApi = {
 
         return res.ok;
     },
+    listAll: async () => {
+        const result = await fetch("/api/employees");
+        const json = result.json();
+
+        return json;
+    },
 }

@@ -5,19 +5,25 @@ export function ActivityApi(db){
     const api = express.Router();
 
     // might need to change this to managerID and require manager cookies depending on the page
-    api.get("/", async (req,res) => {
-        const employeeId = req.cookies.employee;
+    api.get("/", async (req, res) => {
+        const managerId = req.cookies.manager;
 
-        if (!employeeId) {
+        if (!managerId) {
             res.sendStatus(403);
             return;
         }
 
-        const activities = await db.collection("activity")
-            .find({ employeeId: employeeId })
+        const activityItems = await db.collection("activity")
+            .find()
+            .map(({ _id, activityName, department }) => ({
+                id: _id,
+                activityName,
+                department,
+
+            }))
             .toArray();
 
-        res.send(activities);
+        res.json(activityItems)
     })
 
     api.post("/", async (req, res) => {
@@ -69,6 +75,29 @@ export function ActivityApi(db){
 
         res.sendStatus(200);
     });
+
+
+    api.get("/department", async (req, res) => {
+        const employeeId = req.cookies.employee;
+
+        if (!employeeId) {
+            res.sendStatus(403);
+            return;
+        }
+
+        const employee = await db.collection("employee")
+            .findOne({ _id: new ObjectId(req.cookies.employee) });
+
+        const department = employee.department;
+
+        const relevantDepartment = await db.collection("activity")
+            .find({department: department})
+            .toArray();
+
+        res.json(relevantDepartment)
+
+
+    })
 
     return api;
 }

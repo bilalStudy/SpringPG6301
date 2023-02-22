@@ -4,6 +4,7 @@ import {ObjectId} from "mongodb";
 export function ActivityLoggerApi(db){
     const api = express.Router();
 
+
     api.get("/", async (req,res) => {
         const employeeId = req.cookies.employee;
 
@@ -17,29 +18,31 @@ export function ActivityLoggerApi(db){
             .toArray();
 
         res.send(activitylogs);
-    })
+    });
 
     api.post("/", async (req, res) => {
-        const employeeId = req.cookies.employeeId;
+        const employeeId = req.cookies.employee;
+
 
         if (!employeeId) {
             res.sendStatus(403);
             return;
         }
 
-        const activity = {
+        const activityLog = {
             ...req.body,
             employeeId,
         };
 
         await db.collection("activitylogs")
-            .insertOne(activity);
+            .insertOne(activityLog);
 
         res.sendStatus(200);
     });
 
     api.delete("/", async (req, res) => {
         const { id } = req.body;
+
 
         if (!id) {
             res.sendStatus(404);
@@ -57,6 +60,23 @@ export function ActivityLoggerApi(db){
         res.sendStatus(200);
     });
 
+    api.put("/", async (req,res) => {
+        if (!req.cookies.employee){
+            res.sendStatus(403);
+            return;
+        }
+
+        const { id, employeeName, activityName, date, hours } = req.body;
+
+
+        await db.collection("activitylogs")
+            .updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { employeeName, activityName, date, hours  } }
+            );
+
+        res.sendStatus(200);
+    });
 
     return api;
 }

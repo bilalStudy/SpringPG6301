@@ -8,6 +8,7 @@ import {EmployeeApi} from "./api/employeeApi.js";
 import {ManagerApi} from "./api/managerApi.js";
 import {ActivityApi} from "./api/activityApi.js";
 import {ActivityLoggerApi} from "./api/activityLoggerApi.js";
+import {WebSocketServer} from "ws";
 
 dotenv.config();
 
@@ -33,7 +34,19 @@ if(mongodburl){
     })
 }
 
+const sockets = [];
 
+const wsServer = new WebSocketServer({noServer: true})
+
+wsServer.on("connection", (socket) => {
+    sockets.push(socket);
+    socket.on("message", (message) => {
+        console.log("There's a message" + message)
+        for (const reciepient of sockets) {
+            reciepient.send(message.toString());
+        }
+    })
+});
 
 
 app.use((req, res, next) => {
@@ -47,4 +60,11 @@ app.use((req, res, next) => {
 const server = app.listen(process.env.PORT || 3000,
     () => {
         console.log(`express server started on: http://localhost:${server.address().port}`)
+
+        server.on("upgrade", (req, socket, head) => {
+            wsServer.handleUpgrade(req, socket, head, (socket) => {
+                console.log("connected");
+                wsServer.emit("connection", socket, req)
+            })
+        })
     });

@@ -1,19 +1,20 @@
-import {BrowserRouter, json, Link, Route, Routes} from "react-router-dom";
-import {fetchJSON} from "./misc/fetchJSON.jsx";
+import {BrowserRouter, json, Link, Route, Routes, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {employeeApi} from "./api/employeeApi.jsx";
-import {EmployeeRegisterDialog} from "./component/registerForm.jsx";
 import {EmployeeLoginDialog, EmployeeLoginForm, EmployeeLogin, EmployeeLoginPage} from "./component/employeeForm.jsx";
 import {useCookies} from "react-cookie";
 import {managerApi} from "./api/managerApi.jsx";
 import {ManagerLoginDialog} from "./component/managerForm.jsx";
+import {ManageEmployeePage} from "./pages/manageEmployee";
+import {ManageActivityPage} from "./pages/manageActivity";
+import {ManageActivityLogPage} from "./pages/manageActivityLog.jsx";
+import {DepartmentActivitiesPage, ListDepartmentActivitiesPage} from "./pages/listDepartmentActivity";
+import {ChatApplication} from "./pages/chatApp.jsx";
 
 export function FrontPage({ onEmployeeLoggedIn }) {
 
     const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
     const [employeeLoginDialogVisible, setEmployeeLoginDialogVisible] =
-        useState(false);
-    const [employeeRegisterDialogVisible, setEmployeeRegisterDialogVisible] =
         useState(false);
     const [employee, setEmployee] = useState({
         fullname: "Sign in to see Employee name",
@@ -47,36 +48,23 @@ export function FrontPage({ onEmployeeLoggedIn }) {
     return (
         <div>
 
-            <h1> Welcome to the webapp {employee.fullname}</h1>
+            <h1> Welcome to the Company {employee.fullname}</h1>
             <ul>
                 <li>
-                    <Link to={"/register/new"}> Register User </Link>
+                    <Link to={"/activitylogmanagement"}> Manage your Activites </Link>
                 </li>
                 <li>
-                    <Link to={"/register/list"}> List Existing Users </Link>
+                    <Link to={"/relevantdepartment"}> list relevant activites for your department </Link>
                 </li>
                 <li>
-                    <Link to={"/loginpage"}> Login Here </Link>
+                    <Link to={"/chatapp"}> Employee Chatapp </Link>
                 </li>
-                <li>
-                    <Link to={"/loggedinuser"}> Check your username </Link>
-                </li>
-                <li>
-                    <Link to={"/order"}> Order Food here </Link>
-                </li>
-                <li>
-                    <Link to={"/menuitems"}> Look at our menu here </Link>
-                </li>
+
                 {!cookies.manager && (
                     <>
                         <li>
                             <a onClick={() => setEmployeeLoginDialogVisible(true)}>
                                 Login
-                            </a>
-                        </li>
-                        <li>
-                            <a onClick={() => setEmployeeRegisterDialogVisible(true)}>
-                                Register
                             </a>
                         </li>
                         <li>
@@ -91,13 +79,45 @@ export function FrontPage({ onEmployeeLoggedIn }) {
                 setSignedInEmployee={setSignedInEmployee}
             />
 
-            <EmployeeRegisterDialog
-                open={employeeRegisterDialogVisible}
-                setOpen={setEmployeeRegisterDialogVisible}
-            />
-            <EmployeeLogin setSignedInEmployee={setSignedInEmployee}/>
         </div>
 
+    )
+}
+
+export function MainHeader(){
+    const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
+    const [employee, setEmployee] = useState()
+
+    const navigate = useNavigate();
+
+    const signOutManager = () => {
+        removeCookie("manager");
+        document.location.reload();
+    };
+
+    const signoutEmployee = () => {
+        removeCookie("employee");
+        setEmployee(null);
+        document.location.reload();
+    };
+
+    const backToHomepage = () => {
+        navigate("/")
+    }
+
+    return(
+    <ul>
+        <li>
+            <a onClick={signoutEmployee}>Signout</a>
+        </li>
+        <li>
+            <a onClick={signOutManager}>Signout(Manager)</a>
+        </li>
+        <li>
+            <a onClick={backToHomepage}>Homepage</a>
+        </li>
+
+    </ul>
     )
 }
 
@@ -119,10 +139,10 @@ export function ManagerFrontPage({setManager}){
                             <a onClick={() => setManagerDialogVisible(true)}>Login(Manager)</a>
                         </li>
                         <li>
-                            <Link to="/managerpage">Management</Link>
+                            <Link to="/employeemanagement">Employee Management</Link>
                         </li>
                         <li>
-                            <Link to="/manager-chat">Support</Link>
+                            <Link to="/activitymanagement">Activity Management</Link>
                         </li>
                         <li>
                             <a onClick={signOutManager}>Signout(Manager)</a>
@@ -167,7 +187,12 @@ export function Application() {
             <main>
                 <Routes>
                     <Route path={"/"} element={<><FrontPage onEmployeeLoggedIn={setEmployee}/> <ManagerFrontPage setManager={setManagerCallback}/></>} />
-                    <Route path={"/loginpage"} element={<EmployeeLoginPage onEmployeeLoggedIn={setEmployee}/> } />
+                    <Route path={"/loginpage"} element={<><MainHeader/><EmployeeLoginPage onEmployeeLoggedIn={setEmployee}/></> } />
+                    <Route path={"/employeemanagement"} element={<><MainHeader/><ManageEmployeePage /></> } />
+                    <Route path={"/activitymanagement"} element={<><MainHeader/><ManageActivityPage /></> } />
+                    <Route path={"/activitylogmanagement"} element={<><MainHeader/><DepartmentActivitiesPage employee={employee} /> <ManageActivityLogPage /> </>} />
+                    <Route path={"/relevantdepartment"} element={<><MainHeader/><DepartmentActivitiesPage employee={employee}/></> } />
+                    <Route path={"/chatapp"} element={<><MainHeader/><ChatApplication onEmployeeLoggedIn={setEmployee}/></> } />
                 </Routes>
             </main>
         </BrowserRouter>
