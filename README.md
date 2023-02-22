@@ -45,3 +45,28 @@ cd..
 cd server
 npm run dev
 
+some accounts for the employee details and manager details are also in the repo
+
+username: admin
+password: admin
+
+username: manager
+password: manager
+
+for employees we have
+
+username: Employee
+password: employee
+
+username: Drake
+password: drake
+
+username: ice
+password: ice
+
+username: metro
+password: metro
+
+IMPORTANT:
+i might add the .env file in the folder given as the exam solution for your personal test case
+the credentials will be changed after evaluation, and is not added to the github
