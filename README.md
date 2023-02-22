@@ -72,4 +72,8 @@ i might add the .env file in the folder given as the exam solution for your pers
 the credentials will be changed after evaluation, and is not added to the github
 
 functionalites added are management for employee and activities from the manager
-and management for activitylogs for the employee,
+and management for activitylogs for the employee
+
+if failed to load resources i would suggest ctrl + u
+the webapp wouldnt recognize the resources before i did this on another computer.
+it is working fine locally however as you can see in the screenshots
