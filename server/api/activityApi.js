@@ -4,14 +4,19 @@ import {ObjectId} from "mongodb";
 export function ActivityApi(db){
     const api = express.Router();
 
-    // might need to change this to managerID and require manager cookies depending on the page
+
     api.get("/", async (req, res) => {
+
         const managerId = req.cookies.manager;
 
         if (!managerId) {
             res.sendStatus(403);
             return;
         }
+
+
+
+
 
         const activityItems = await db.collection("activity")
             .find()
@@ -27,10 +32,13 @@ export function ActivityApi(db){
     })
 
     api.post("/", async (req, res) => {
+
         if (!req.cookies.manager) {
             res.sendStatus(403);
             return;
         }
+
+
 
         const { activityName, department } = req.body;
 
@@ -41,10 +49,15 @@ export function ActivityApi(db){
     });
 
     api.put("/", async (req, res) => {
+
         if (!req.cookies.manager) {
             res.sendStatus(403);
             return;
         }
+
+
+
+
 
         const { id, activityName, department } = req.body;
 
@@ -65,10 +78,13 @@ export function ActivityApi(db){
             return;
         }
 
+
         if (!req.cookies.manager) {
             res.sendStatus(403);
             return;
         }
+
+
 
         const result = await db.collection("activity")
             .deleteOne({ _id: new ObjectId(id) });
@@ -78,6 +94,7 @@ export function ActivityApi(db){
 
 
     api.get("/department", async (req, res) => {
+
         const employeeId = req.cookies.employee;
 
         if (!employeeId) {
