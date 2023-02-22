@@ -68,8 +68,6 @@ username: metro
 password: metro
 
 IMPORTANT:
-i might add the .env file in the folder given as the exam solution for your personal test case
-the credentials will be changed after evaluation, and is not added to the github
 
 functionalites added are management for employee and activities from the manager
 and management for activitylogs for the employee
